@@ -1,0 +1,400 @@
+{
+  "name": "📬 Digest Feedback Handler",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "id": "bb000001-0000-4000-8000-000000000001",
+      "name": "Telegram Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "feedback-digest-001",
+      "parameters": {
+        "path": "feedback",
+        "responseMode": "onReceived",
+        "options": {}
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000002",
+      "name": "Parse Callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const req = $input.first().json;\n\nconst headers = req.headers || {};\nconst update  = req.body   || req;\n\nconst secret = process.env.TELEGRAM_WEBHOOK_SECRET || '';\nif (secret) {\n  const received = headers['x-telegram-bot-api-secret-token'] || '';\n  if (received !== secret) {\n    return [{ json: { isLike:false, isDislike:false, isStats:false, isQuestion:false, blocked:true } }];\n  }\n}\n\nconst cq  = update?.callback_query;\nconst msg = update?.message;\nconst OWNER = process.env.TELEGRAM_CHAT_ID || '';\n\nif (msg && typeof msg.text === 'string') {\n  const t = msg.text.trim();\n  const chatId = String(msg.chat?.id || '');\n\n  if (t.startsWith('/stats')) {\n    return [{ json: { isLike:false, isDislike:false, isStats:true, isQuestion:false,\n      chatId, articleId:0, callbackQueryId:'' } }];\n  }\n  // любой непустой текст не-команда от владельца = запрос на разбор\n  if (t && !t.startsWith('/') && (!OWNER || chatId === OWNER)) {\n    return [{ json: { isLike:false, isDislike:false, isStats:false, isQuestion:true,\n      text:t, chatId, articleId:0, callbackQueryId:'' } }];\n  }\n  return [{ json: { isLike:false, isDislike:false, isStats:false, isQuestion:false, chatId } }];\n}\n\nif (!cq) return [{ json: { isLike:false, isDislike:false, isStats:false, isQuestion:false } }];\n\nconst parts = (cq.data || '').split(':');\nconst action    = parts[0];\nconst articleId = parseInt(parts[1]);\nconst isLike    = action === 'like'    && articleId > 0;\nconst isDislike = action === 'dislike' && articleId > 0;\n\nreturn [{ json: {\n  isLike, isDislike, isStats:false, isQuestion:false,\n  articleId,\n  callbackQueryId: cq.id,\n  chatId:  String(cq.message?.chat?.id || ''),\n  messageId: cq.message?.message_id\n}}];"
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000003",
+      "name": "Is Like?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isLike || $json.isDislike }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000004",
+      "name": "Skip",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        820
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000005",
+      "name": "Answer Callback",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=`https://api.telegram.org/bot${$env.TELEGRAM_TOKEN}/answerCallbackQuery`",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=JSON.stringify({callback_query_id:$json.callbackQueryId,text:$json.isLike?'✅ Отмечено':'👎 Учтено'})",
+        "options": {}
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000006",
+      "name": "Load Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const parseData = $('Parse Callback').first().json;\nconst { articleId, isLike, isDislike } = parseData;\nconst BASE = process.env.SUPABASE_URL;\nconst KEY  = process.env.SUPABASE_ANON_KEY;\nconst h    = { apikey: KEY, Authorization: 'Bearer '+KEY };\n\nconst [artRes, profRes] = await Promise.all([\n  $helpers.httpRequest({ method:'GET', url: BASE+'/rest/v1/articles?id=eq.'+articleId+'&select=*', headers: h }),\n  $helpers.httpRequest({ method:'GET', url: BASE+'/rest/v1/interest_profile?id=eq.1', headers: h })\n]);\n\nconst article = Array.isArray(artRes)  ? artRes[0]  : artRes;\nconst profile = Array.isArray(profRes) ? profRes[0] : profRes;\n\nif (!article) return [{ json: { error: 'article_not_found', articleId } }];\n\nreturn [{ json: {\n  articleId,\n  isLike,\n  isDislike,\n  article,\n  profile: profile || { sources:{}, keywords:{}, total_feedbacks:0 }\n}}];"
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000007",
+      "name": "Update Profile",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const { article, profile, articleId, isLike, isDislike } = $input.first().json;\nconst ALPHA  = 0.2;\nconst signal = isLike ? 1.0 : 0.0;\n\nconst sources  = { ...profile.sources  };\nconst keywords = { ...profile.keywords };\n\nif (article.source) {\n  sources[article.source] = ALPHA * signal + (1-ALPHA) * (sources[article.source] || 0.5);\n}\nfor (const kw of (article.keywords || [])) {\n  keywords[kw] = ALPHA * signal + (1-ALPHA) * (keywords[kw] || 0.5);\n}\n\nreturn [{ json: {\n  articleId,\n  isLike,\n  article,\n  updatedProfile: {\n    sources, keywords,\n    total_feedbacks: (profile.total_feedbacks || 0) + 1,\n    updated_at: new Date().toISOString()\n  }\n}}];"
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000008",
+      "name": "Save to Supabase",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        200
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const { articleId, isLike, updatedProfile } = $input.first().json;\nconst BASE = process.env.SUPABASE_URL;\nconst KEY  = process.env.SUPABASE_ANON_KEY;\nconst h    = { apikey:KEY, Authorization:'Bearer '+KEY, 'Content-Type':'application/json' };\n\nconst ops = [\n  $helpers.httpRequest({\n    method:'PATCH',\n    url: BASE+'/rest/v1/interest_profile?id=eq.1',\n    headers: { ...h, Prefer:'return=minimal' },\n    body: JSON.stringify(updatedProfile)\n  })\n];\n\nif (isLike) {\n  ops.push($helpers.httpRequest({\n    method:'POST',\n    url: BASE+'/rest/v1/feedback',\n    headers: { ...h, Prefer:'return=minimal' },\n    body: JSON.stringify({ article_id: articleId })\n  }));\n}\n\nawait Promise.all(ops);\n\nreturn [{ json: { ok: true, articleId, action: isLike ? 'like' : 'dislike', total: updatedProfile.total_feedbacks } }];"
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000009",
+      "name": "Is Stats?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        900,
+        480
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isStats }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000010",
+      "name": "Load Stats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        480
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const { chatId } = $('Parse Callback').first().json;\nconst BASE = process.env.SUPABASE_URL;\nconst KEY  = process.env.SUPABASE_ANON_KEY;\nconst h    = { apikey: KEY, Authorization: 'Bearer '+KEY };\n\nconst profRes = await $helpers.httpRequest({\n  method: 'GET',\n  url: BASE + '/rest/v1/interest_profile?id=eq.1',\n  headers: h\n});\n\nconst profile  = (Array.isArray(profRes) ? profRes[0] : profRes) || {};\nconst sources  = profile.sources  || {};\nconst keywords = profile.keywords || {};\nconst total    = profile.total_feedbacks || 0;\n\nconst pct = w => (w * 100).toFixed(0) + '%';\n\nconst topSrc = Object.entries(sources)\n  .sort((a,b) => b[1]-a[1]).slice(0,5)\n  .map(([s,w]) => '  ' + s + '  ' + pct(w)).join(String.fromCharCode(10))\n  || '  —';\n\nconst topKw = Object.entries(keywords)\n  .sort((a,b) => b[1]-a[1]).slice(0,10)\n  .map(([k,w]) => '  #' + k + '  ' + pct(w)).join(String.fromCharCode(10))\n  || '  —';\n\nconst NL = String.fromCharCode(10);\nconst statsText = [\n  '📊 Твой профиль интересов',\n  '',\n  'Всего оценок (👍+👎): ' + total,\n  '',\n  '🌐 Топ источники:',\n  topSrc,\n  '',\n  '🔑 Топ темы:',\n  topKw\n].join(NL);\n\nreturn [{ json: { statsText, chatId } }];"
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000011",
+      "name": "Send Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1340,
+        480
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=`https://api.telegram.org/bot${$env.TELEGRAM_TOKEN}/sendMessage`",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=JSON.stringify({chat_id:$json.chatId,text:$json.statsText})",
+        "options": {}
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000012",
+      "name": "Is Question?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        640
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.isQuestion }}",
+              "value2": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000013",
+      "name": "Deep Dive",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        640
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const { text, chatId } = $('Parse Callback').first().json;\nconst BASE = process.env.SUPABASE_URL;\nconst KEY  = process.env.SUPABASE_ANON_KEY;\nconst sh   = { apikey:KEY, Authorization:'Bearer '+KEY };\n\ntry {\n  async function loadDay(day){\n    const r = await $helpers.httpRequest({\n      method:'GET',\n      url: BASE+'/rest/v1/articles?digest_id=eq.'+day+'&order=score.desc',\n      headers: sh\n    });\n    return Array.isArray(r) ? r : [];\n  }\n\n  const today = new Date().toISOString().slice(0,10);\n  let arts = await loadDay(today);\n  if (!arts.length) {\n    const y = new Date(Date.now()-864e5).toISOString().slice(0,10);\n    arts = await loadDay(y);\n  }\n  if (!arts.length) {\n    return [{ json: { answer: 'Пока нет статей для разбора — дайджест ещё не приходил сегодня.', chatId } }];\n  }\n\n  // какая статья: номер / порядковое слово / совпадение по словам заголовка\n  const lower = text.toLowerCase();\n  const ord = { 'перв':1,'втор':2,'трет':3,'четверт':4,'пят':5,'шест':6,'седьм':7,'восьм':8,'девят':9,'десят':10 };\n  let idx = null;\n  const mnum = lower.match(/\\b(\\d{1,2})\\b/);\n  if (mnum) idx = parseInt(mnum[1]);\n  else { for (const k in ord) { if (lower.includes(k)) { idx = ord[k]; break; } } }\n\n  let target = null;\n  if (idx && arts[idx-1]) target = arts[idx-1];\n  if (!target) {\n    const stop = new Set(['про','расскажи','подробнее','что','это','about','tell','more','новость','статью','статья','можешь']);\n    const qt = new Set(lower.split(/[^a-zа-яё0-9]+/i).filter(w => w.length > 3 && !stop.has(w)));\n    let best=null, bestScore=0;\n    for (const a of arts) {\n      const tt = String(a.title||'').toLowerCase();\n      let s = 0; for (const w of qt) if (tt.includes(w)) s++;\n      if (s > bestScore) { bestScore = s; best = a; }\n    }\n    target = bestScore > 0 ? best : arts[0];\n  }\n\n  // полный текст статьи\n  let full = '';\n  try {\n    const r = await $helpers.httpRequest({\n      method:'GET', url: target.link, timeout:8000,\n      headers:{ 'User-Agent':'Mozilla/5.0 (compatible; NewsDigestBot/1.0)' }\n    });\n    const s = (typeof r==='string') ? r : (r && r.body ? r.body : '');\n    full = s.replace(/<script[\\s\\S]*?<\\/script>/gi,' ')\n            .replace(/<style[\\s\\S]*?<\\/style>/gi,' ')\n            .replace(/<[^>]+>/g,' ')\n            .replace(/&[a-z]+;/gi,' ')\n            .replace(/\\s+/g,' ').trim().slice(0,6000);\n  } catch(e) {}\n\n  const material = (full && full.length > 200) ? full : String(target.title||'');\n  const prompt = 'Сделай подробный разбор этой новости на русском языке. Структура: 1) Что произошло (2-3 предложения). 2) Почему это важно. 3) Контекст и детали. 4) Что это значит на практике. Пиши просто и по делу.' +\n    String.fromCharCode(10)+String.fromCharCode(10) + 'Заголовок: ' + target.title +\n    String.fromCharCode(10)+String.fromCharCode(10) + 'Текст:' + String.fromCharCode(10) + material;\n\n  const lr = await $helpers.httpRequest({\n    method:'POST', url:'https://openrouter.ai/api/v1/chat/completions',\n    headers:{ Authorization:'Bearer '+process.env.OPENROUTER_API_KEY, 'Content-Type':'application/json' },\n    body: JSON.stringify({\n      model: process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash',\n      messages: [{ role:'user', content: prompt }]\n    })\n  });\n  const parsed = (typeof lr==='string') ? JSON.parse(lr) : lr;\n  let body = parsed?.choices?.[0]?.message?.content || 'Не удалось разобрать статью.';\n\n  const NL = String.fromCharCode(10);\n  const answer = '🔍 ' + target.title + NL+NL + body.slice(0,3500) + NL+NL + '→ ' + target.link;\n  return [{ json: { answer, chatId } }];\n} catch (e) {\n  return [{ json: { answer: 'Не получилось сделать разбор — попробуй ещё раз чуть позже.', chatId } }];\n}"
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000014",
+      "name": "Send Answer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1780,
+        640
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=`https://api.telegram.org/bot${$env.TELEGRAM_TOKEN}/sendMessage`",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=JSON.stringify({chat_id:$json.chatId,text:$json.answer,disable_web_page_preview:true})",
+        "options": {}
+      }
+    },
+    {
+      "id": "bb000001-0000-4000-8000-000000000015",
+      "name": "Update Taste",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        200
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const key = process.env.EMBEDDINGS_API_KEY;\nconst isLike = $('Parse Callback').first().json.isLike;\nconst ld = $('Load Data').first().json;\nconst article = ld && ld.article;\n\nif (!key || !isLike || !article) {\n  return [{ json: { taste: 'skipped' } }];\n}\n\ntry {\n  const url   = process.env.EMBEDDINGS_URL   || 'https://api.openai.com/v1/embeddings';\n  const model = process.env.EMBEDDINGS_MODEL || 'text-embedding-3-small';\n  const BASE  = process.env.SUPABASE_URL;\n  const SKEY  = process.env.SUPABASE_ANON_KEY;\n  const sh    = { apikey:SKEY, Authorization:'Bearer '+SKEY, 'Content-Type':'application/json' };\n\n  const text = (String(article.title||'')+'. '+(article.keywords||[]).join(', ')).slice(0,800);\n\n  const er = await $helpers.httpRequest({\n    method:'POST', url,\n    headers:{ Authorization:'Bearer '+key, 'Content-Type':'application/json' },\n    body: JSON.stringify({ model, input: text })\n  });\n  const ed  = (typeof er==='string') ? JSON.parse(er) : er;\n  const emb = ed.data[0].embedding;\n\n  const tr = await $helpers.httpRequest({\n    method:'GET', url: BASE+'/rest/v1/taste_vector?id=eq.1',\n    headers:{ apikey:SKEY, Authorization:'Bearer '+SKEY }\n  });\n  const t = Array.isArray(tr) ? tr[0] : tr;\n  const old = (t && Array.isArray(t.vector)) ? t.vector : null;\n  const n   = (t && t.n) || 0;\n\n  const ALPHA = 0.2;\n  let nv;\n  if (old && old.length === emb.length) nv = old.map((v,i) => ALPHA*emb[i] + (1-ALPHA)*v);\n  else nv = emb.slice();\n\n  await $helpers.httpRequest({\n    method:'PATCH', url: BASE+'/rest/v1/taste_vector?id=eq.1',\n    headers:{ ...sh, Prefer:'return=minimal' },\n    body: JSON.stringify({ vector: nv, n: n+1, updated_at: new Date().toISOString() })\n  });\n\n  return [{ json: { taste: 'updated', n: n+1 } }];\n} catch (e) {\n  return [{ json: { taste: 'error', message: String(e && e.message || e) } }];\n}"
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Callback": {
+      "main": [
+        [
+          {
+            "node": "Is Like?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Like?": {
+      "main": [
+        [
+          {
+            "node": "Answer Callback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Stats?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer Callback": {
+      "main": [
+        [
+          {
+            "node": "Load Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Data": {
+      "main": [
+        [
+          {
+            "node": "Update Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Profile": {
+      "main": [
+        [
+          {
+            "node": "Save to Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Stats?": {
+      "main": [
+        [
+          {
+            "node": "Load Stats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Is Question?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Stats": {
+      "main": [
+        [
+          {
+            "node": "Send Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Question?": {
+      "main": [
+        [
+          {
+            "node": "Deep Dive",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deep Dive": {
+      "main": [
+        [
+          {
+            "node": "Send Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Supabase": {
+      "main": [
+        [
+          {
+            "node": "Update Taste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "instanceId": "local"
+  }
+}

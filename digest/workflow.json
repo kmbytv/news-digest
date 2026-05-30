@@ -1,0 +1,1090 @@
+{
+  "name": "🌅 Morning News Digest",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "Europe/Moscow"
+  },
+  "nodes": [
+    {
+      "id": "aa000001-0000-4000-8000-000000000001",
+      "name": "Schedule: 08:00 MSK",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000002",
+      "name": "RSS: TechCrunch",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        60
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://techcrunch.com/feed/"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000003",
+      "name": "RSS: VentureBeat",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        180
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://feeds.feedburner.com/venturebeat/SZYF"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000004",
+      "name": "RSS: The Verge",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://www.theverge.com/rss/index.xml"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000005",
+      "name": "RSS: a16z",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        420
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://a16z.com/feed/"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000006",
+      "name": "RSS: Hacker News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        540
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://news.ycombinator.com/rss"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000014",
+      "name": "RSS: MarkTechPost",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        660
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://www.marktechpost.com/feed/"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000015",
+      "name": "RSS: VentureBeat AI",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        780
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://venturebeat.com/category/ai/feed/"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000016",
+      "name": "RSS: TechCrunch AI",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        900
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000017",
+      "name": "RSS: OpenAI Blog",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1020
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://openai.com/news/rss/"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000018",
+      "name": "RSS: Hugging Face",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1140
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://huggingface.co/blog/feed.xml"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000019",
+      "name": "RSS: Simon Willison",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1260
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://simonwillison.net/atom/everything/"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000020",
+      "name": "RSS: Ben's Bites",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1380
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://bensbites.beehiiv.com/feed"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000021",
+      "name": "RSS: Inc",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1500
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://inc.com/rss"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000022",
+      "name": "RSS: Product Hunt",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1620
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://www.producthunt.com/feed"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000023",
+      "name": "RSS: TechCrunch Venture",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1740
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://techcrunch.com/category/venture/feed/"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000024",
+      "name": "RSS: AVC",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1860
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://avc.com/feed"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000025",
+      "name": "RSS: OpenVC",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        1980
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://openvc.app/blog/rss"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000026",
+      "name": "RSS: Bloomberg Economics",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        2100
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://feeds.bloomberg.com/economics/news.rss"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000027",
+      "name": "RSS: The Economist",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        2220
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://www.economist.com/finance-and-economics/rss.xml"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000028",
+      "name": "RSS: FT Economics",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        2340
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://www.ft.com/economics?format=rss"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000029",
+      "name": "RSS: Business Insider",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [
+        500,
+        2460
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "url": "https://feeds.businessinsider.com/custom/all"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000007",
+      "name": "Merge RSS",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        760,
+        300
+      ],
+      "parameters": {
+        "mode": "append",
+        "options": {}
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000030",
+      "name": "Load Profile",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        980,
+        140
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "=`${$env.SUPABASE_URL}/rest/v1/interest_profile?id=eq.1`",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "=$env.SUPABASE_ANON_KEY"
+            },
+            {
+              "name": "Authorization",
+              "value": "=`Bearer ${$env.SUPABASE_ANON_KEY}`"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000008",
+      "name": "Filter & Score",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const items = $('Merge RSS').all();\nconst profileArr = $input.all();\nconst raw = profileArr[0]?.json;\nconst profile = (Array.isArray(raw) ? raw[0] : raw) || { sources: {}, keywords: {} };\nconst srcW = profile.sources || {};\nconst kwW  = profile.keywords || {};\n\nconst now = new Date();\nconst oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);\nconst articles = [];\n\nconst KW = ['ai','llm','gpt','agent','model','startup','funding','seed','series',\n  'raises','launch','product','saas','economy','market','inflation','open source',\n  'gemini','claude','openai','anthropic','nvidia','vc','venture','acquire','ipo'];\n\nfor (const item of items) {\n  const d = item.json;\n  if (!d || !d.title || d.error) continue;\n\n  let articleDate = null;\n  const dateStr = d.isoDate || d.pubDate || d.date;\n  if (dateStr) { try { articleDate = new Date(dateStr); } catch(e){} }\n  if (articleDate && !isNaN(articleDate) && articleDate < oneDayAgo) continue;\n\n  const title   = String(d.title||'').trim().slice(0,200);\n  const link    = String(d.link||d.url||'').trim();\n  if (!title || !link) continue;\n\n  const snippet = String(d.contentSnippet||d.summary||d.description||d.content||'')\n    .replace(/<[^>]+>/g,'').trim().slice(0,500);\n\n  let source = '';\n  try { source = new URL(link).hostname.replace('www.',''); } catch(e){}\n\n  const text = (title+' '+snippet).toLowerCase();\n  const kws  = KW.filter(k => text.includes(k));\n\n  const hours    = articleDate ? (now - articleDate)/3600000 : 12;\n  const fresh    = Math.exp(-0.05 * hours);\n  const kwScore  = kws.length ? kws.reduce((s,k)=>s+(kwW[k]||0.5),0)/kws.length : 0.5;\n  const srcScore = srcW[source] || 0.5;\n  const score    = kwScore * srcScore * fresh;\n\n  articles.push({ title, link, snippet, source, keywords: kws, score });\n}\n\narticles.sort((a,b) => b.score - a.score);\n\nfunction titleTokens(title) {\n  return new Set(\n    title.toLowerCase().split(/[^a-zA-Z0-9Ѐ-ӿ]+/).filter(w => w.length > 3)\n  );\n}\nfunction isDuplicate(a, b) {\n  const sa = titleTokens(a.title);\n  const sb = titleTokens(b.title);\n  if (sa.size === 0 || sb.size === 0) return false;\n  let overlap = 0;\n  for (const w of sa) if (sb.has(w)) overlap++;\n  const jaccard = overlap / (sa.size + sb.size - overlap);\n  return overlap >= 2 && jaccard >= 0.3;\n}\n\nconst TREND_MIN = 3;\nconst clusters = [];\nfor (const art of articles) {\n  const c = clusters.find(cl => isDuplicate(cl.rep, art));\n  if (c) { c.sources.add(art.source); }\n  else   { clusters.push({ rep: art, sources: new Set([art.source]) }); }\n}\n\nfor (const c of clusters) {\n  const n = c.sources.size;\n  c.rep.sourceCount = n;\n  c.rep.trending = n >= TREND_MIN;\n  if (c.rep.trending) c.rep.score *= (1 + 0.3 * (n - 1));\n}\n\nconst deduped = clusters.map(c => c.rep).sort((a,b) => b.score - a.score);\nconst top = deduped.slice(0,40);\n\nreturn [{ json: { count: top.length, articles: top } }];"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000009",
+      "name": "Has Articles?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.count }}",
+              "operation": "larger",
+              "value2": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000010",
+      "name": "No Articles - Stop",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1860,
+        480
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000031",
+      "name": "Store Articles",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1860,
+        160
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=`${$env.SUPABASE_URL}/rest/v1/articles`",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "=$env.SUPABASE_ANON_KEY"
+            },
+            {
+              "name": "Authorization",
+              "value": "=`Bearer ${$env.SUPABASE_ANON_KEY}`"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation,resolution=merge-duplicates"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=JSON.stringify($json.articles.map(a=>({digest_id:new Date().toISOString().slice(0,10),title:a.title,link:a.link,source:a.source,keywords:a.keywords,score:a.score})))",
+        "options": {}
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000011",
+      "name": "Call LLM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2300,
+        160
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=`Bearer ${$env.OPENROUTER_API_KEY}`"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=JSON.stringify({model:$env.OPENROUTER_MODEL||'google/gemini-2.5-flash',messages:[{role:'user',content:$('Fetch & Build Prompt').first().json.prompt}]})",
+        "options": {
+          "timeout": 60000
+        }
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000012",
+      "name": "Extract Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2520,
+        160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const response = $input.first().json;\nlet text = response?.choices?.[0]?.message?.content;\nif (!text) {\n  text = '⚠️ Не удалось получить дайджест от LLM. Проверьте OPENROUTER_API_KEY и лимиты.';\n}\nconst digestText = text.slice(0, 4000);\n\nconst storeOut = $('Store Articles').all();\nconst stored = Array.isArray(storeOut[0]?.json)\n  ? storeOut[0].json\n  : storeOut.map(i => i.json).filter(a => a && a.id);\n\nconst buttons = stored.slice(0,15).map(a => ([\n  { text: '👍 ' + String(a.title).slice(0,32), callback_data: 'like:' + a.id },\n  { text: '👎', callback_data: 'dislike:' + a.id }\n]));\n\nreturn [{ json: { digestText, keyboard: { inline_keyboard: buttons } } }];"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000013",
+      "name": "Send Digest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2740,
+        160
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=`https://api.telegram.org/bot${$env.TELEGRAM_TOKEN}/sendMessage`",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=JSON.stringify({chat_id:$env.TELEGRAM_CHAT_ID,text:$json.digestText})",
+        "options": {}
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000032",
+      "name": "Build Keyboard Body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2960,
+        160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const { keyboard } = $('Extract Digest').first().json;\nreturn [{ json: {\n  body: JSON.stringify({\n    chat_id: process.env.TELEGRAM_CHAT_ID,\n    text: 'Оцени статьи 👍 или 👎 — бот учится на твоих оценках:',\n    reply_markup: JSON.stringify(keyboard)\n  })\n}}];"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000033",
+      "name": "Send Like Keyboard",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3180,
+        160
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=`https://api.telegram.org/bot${$env.TELEGRAM_TOKEN}/sendMessage`",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=$json.body",
+        "options": {}
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000034",
+      "name": "Cleanup Old Articles",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        620
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "method": "DELETE",
+        "url": "=`${$env.SUPABASE_URL}/rest/v1/articles?digest_id=lt.${new Date(Date.now() - (Number($env.DIGEST_RETENTION_DAYS) || 14) * 864e5).toISOString().slice(0,10)}`",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "=$env.SUPABASE_ANON_KEY"
+            },
+            {
+              "name": "Authorization",
+              "value": "=`Bearer ${$env.SUPABASE_ANON_KEY}`"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000035",
+      "name": "Semantic Rerank",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const articles = $('Filter & Score').first().json.articles || [];\nconst key = process.env.EMBEDDINGS_API_KEY;\nif (!key || !articles.length) {\n  return [{ json: { count: articles.length, articles } }];\n}\n\nconst url   = process.env.EMBEDDINGS_URL   || 'https://api.openai.com/v1/embeddings';\nconst model = process.env.EMBEDDINGS_MODEL || 'text-embedding-3-small';\nconst BASE  = process.env.SUPABASE_URL;\nconst SKEY  = process.env.SUPABASE_ANON_KEY;\n\nfunction cosine(a,b){\n  let d=0,na=0,nb=0;\n  const n=Math.min(a.length,b.length);\n  for(let i=0;i<n;i++){ d+=a[i]*b[i]; na+=a[i]*a[i]; nb+=b[i]*b[i]; }\n  if(!na||!nb) return 0;\n  return d/(Math.sqrt(na)*Math.sqrt(nb));\n}\n\ntry {\n  const cand = articles.slice(0, 30);\n  const inputs = cand.map(a => (String(a.title||'')+'. '+String(a.snippet||'')).slice(0,800));\n\n  const er = await $helpers.httpRequest({\n    method:'POST', url,\n    headers:{ Authorization:'Bearer '+key, 'Content-Type':'application/json' },\n    body: JSON.stringify({ model, input: inputs })\n  });\n  const ed = (typeof er==='string') ? JSON.parse(er) : er;\n  const vecs = (ed.data||[]).map(d => d.embedding);\n  cand.forEach((a,i) => { a.embedding = vecs[i]; });\n\n  let taste = null;\n  try {\n    const tr = await $helpers.httpRequest({\n      method:'GET', url: BASE+'/rest/v1/taste_vector?id=eq.1',\n      headers:{ apikey:SKEY, Authorization:'Bearer '+SKEY }\n    });\n    const t = Array.isArray(tr) ? tr[0] : tr;\n    if (t && Array.isArray(t.vector) && (t.n||0) > 0) taste = t.vector;\n  } catch(e) {}\n\n  if (taste) {\n    for (const a of cand) {\n      if (!Array.isArray(a.embedding)) continue;\n      const cos = cosine(taste, a.embedding);\n      a.semCos = cos;\n      a.score *= (1 + 0.5 * Math.max(0, cos));\n    }\n    articles.sort((x,y) => y.score - x.score);\n  }\n} catch (e) {\n  // эмбеддинги недоступны — остаёмся на keyword-скоринге\n}\n\nreturn [{ json: { count: articles.length, articles } }];"
+      }
+    },
+    {
+      "id": "aa000001-0000-4000-8000-000000000036",
+      "name": "Fetch & Build Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        160
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const articles = $('Semantic Rerank').first().json.articles || [];\nconst NL = String.fromCharCode(10);\nconst N = 10;\n\nfunction stripHtml(s){\n  return String(s||'')\n    .replace(/<script[\\s\\S]*?<\\/script>/gi,' ')\n    .replace(/<style[\\s\\S]*?<\\/style>/gi,' ')\n    .replace(/<[^>]+>/g,' ')\n    .replace(/&[a-z]+;/gi,' ')\n    .replace(/\\s+/g,' ')\n    .trim();\n}\nasync function fetchText(u){\n  try {\n    const r = await $helpers.httpRequest({\n      method:'GET', url:u, timeout:7000,\n      headers:{ 'User-Agent':'Mozilla/5.0 (compatible; NewsDigestBot/1.0)' }\n    });\n    const s = (typeof r==='string') ? r : (r && r.body ? r.body : '');\n    return stripHtml(s).slice(0,2500);\n  } catch(e){ return ''; }\n}\n\nconst head = articles.slice(0, N);\nconst texts = await Promise.all(head.map(a => fetchText(a.link)));\nhead.forEach((a,i) => { a.fullText = texts[i]; });\n\nconst mainEvent = articles.filter(a => a.trending)\n  .sort((a,b) => b.sourceCount - a.sourceCount)[0] || null;\n\nconst today = new Date().toLocaleDateString('ru-RU',{\n  day:'numeric', month:'long', year:'numeric', timeZone:'Europe/Moscow'\n});\n\nconst lines = articles.slice(0,40).map(a => {\n  const flag = a.trending ? ' [🔥 пишут '+a.sourceCount+' источников]' : '';\n  const p = ['Заголовок: '+a.title+flag];\n  const hasFull = a.fullText && a.fullText.length > 200;\n  const bodyText = hasFull ? a.fullText : a.snippet;\n  if (bodyText) p.push((hasFull ? 'Текст статьи: ' : 'Описание: ')+bodyText);\n  p.push('Ссылка: '+a.link);\n  return p.join(NL);\n});\nconst articlesText = lines.join(NL+NL+'---'+NL+NL);\n\nconst trendSection = mainEvent\n  ? '🔥 Главное событие дня'+NL+'• [о чём пишут все источники — суть и почему важно]. → [ссылка]'+NL+NL\n  : '';\n\nconst fmt =\n  '🌅 Дайджест '+today+NL+NL+\n  trendSection+\n  '🤖 AI-инструменты'+NL+'• [суть — 2 предложения, что это и зачем тебе]. → [ссылка]'+NL+NL+\n  '🚀 Как запускают'+NL+'• [история или инсайт от фаундера]. → [ссылка]'+NL+NL+\n  '💰 Куда идут деньги'+NL+'• [раунд или тренд — коротко]. → [ссылка]'+NL+NL+\n  '🌍 Экономика'+NL+'• [макро или рыночный тренд]. → [ссылка]'+NL+NL+\n  '⚡ Находка дня'+NL+'• [что-то неожиданное но важное]'+NL+NL+\n  '💡 Запомни сегодня: [одна простая мысль, 1-2 предложения]';\n\nconst trendHint = mainEvent\n  ? 'Главное событие дня (об этом пишут '+mainEvent.sourceCount+' источников): \"'+mainEvent.title+'\". Начни дайджест с раздела про него.'\n  : 'Сегодня нет события, о котором пишут все — раздел \"Главное событие дня\" пропусти.';\n\nconst prompt = [\n  'Ты составляешь утренний дайджест новостей. Для большинства статей дан полный текст — используй его, чтобы объяснить суть глубоко, а не пересказывать заголовок. Статьи с 🔥 освещают несколько источников:',\n  articlesText,\n  trendHint,\n  'Составь дайджест на русском языке. Формат:',\n  fmt,\n  'Правила: пиши просто, без жаргона, максимум 3 пункта на категорию, ссылка после каждого пункта. Если по категории нет новостей — пропусти её.'\n].join(NL+NL);\n\nreturn [{ json: { prompt, count: articles.length } }];"
+      }
+    }
+  ],
+  "connections": {
+    "Schedule: 08:00 MSK": {
+      "main": [
+        [
+          {
+            "node": "RSS: TechCrunch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: VentureBeat",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: The Verge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: a16z",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: Hacker News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: MarkTechPost",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: VentureBeat AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: TechCrunch AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: OpenAI Blog",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: Hugging Face",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: Simon Willison",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: Ben's Bites",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: Inc",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: Product Hunt",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: TechCrunch Venture",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: AVC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: OpenVC",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: Bloomberg Economics",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: The Economist",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: FT Economics",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS: Business Insider",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Cleanup Old Articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS: TechCrunch": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS: VentureBeat": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "RSS: The Verge": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "RSS: a16z": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "RSS: Hacker News": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "RSS: MarkTechPost": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "RSS: VentureBeat AI": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "RSS: TechCrunch AI": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "RSS: OpenAI Blog": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "RSS: Hugging Face": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 9
+          }
+        ]
+      ]
+    },
+    "RSS: Simon Willison": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 10
+          }
+        ]
+      ]
+    },
+    "RSS: Ben's Bites": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 11
+          }
+        ]
+      ]
+    },
+    "RSS: Inc": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 12
+          }
+        ]
+      ]
+    },
+    "RSS: Product Hunt": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 13
+          }
+        ]
+      ]
+    },
+    "RSS: TechCrunch Venture": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 14
+          }
+        ]
+      ]
+    },
+    "RSS: AVC": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 15
+          }
+        ]
+      ]
+    },
+    "RSS: OpenVC": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 16
+          }
+        ]
+      ]
+    },
+    "RSS: Bloomberg Economics": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 17
+          }
+        ]
+      ]
+    },
+    "RSS: The Economist": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 18
+          }
+        ]
+      ]
+    },
+    "RSS: FT Economics": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 19
+          }
+        ]
+      ]
+    },
+    "RSS: Business Insider": {
+      "main": [
+        [
+          {
+            "node": "Merge RSS",
+            "type": "main",
+            "index": 20
+          }
+        ]
+      ]
+    },
+    "Merge RSS": {
+      "main": [
+        [
+          {
+            "node": "Load Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Profile": {
+      "main": [
+        [
+          {
+            "node": "Filter & Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Score": {
+      "main": [
+        [
+          {
+            "node": "Semantic Rerank",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Articles?": {
+      "main": [
+        [
+          {
+            "node": "Store Articles",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Articles - Stop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Articles": {
+      "main": [
+        [
+          {
+            "node": "Fetch & Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call LLM": {
+      "main": [
+        [
+          {
+            "node": "Extract Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Digest": {
+      "main": [
+        [
+          {
+            "node": "Send Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Digest": {
+      "main": [
+        [
+          {
+            "node": "Build Keyboard Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Keyboard Body": {
+      "main": [
+        [
+          {
+            "node": "Send Like Keyboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Semantic Rerank": {
+      "main": [
+        [
+          {
+            "node": "Has Articles?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch & Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "Call LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "instanceId": "local"
+  }
+}

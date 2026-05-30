@@ -1,0 +1,131 @@
+{
+  "name": "📅 Weekly Digest",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "timezone": "Europe/Moscow"
+  },
+  "nodes": [
+    {
+      "id": "cc000001-0000-4000-8000-000000000001",
+      "name": "Schedule: Sun 09:00 MSK",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cc000001-0000-4000-8000-000000000002",
+      "name": "Load Week Likes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ],
+      "continueOnFail": true,
+      "parameters": {
+        "method": "GET",
+        "url": "=`${$env.SUPABASE_URL}/rest/v1/feedback?select=liked_at,articles(title,link,source,keywords)&liked_at=gte.${new Date(Date.now()-7*864e5).toISOString().slice(0,10)}`",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "=$env.SUPABASE_ANON_KEY"
+            },
+            {
+              "name": "Authorization",
+              "value": "=`Bearer ${$env.SUPABASE_ANON_KEY}`"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "cc000001-0000-4000-8000-000000000003",
+      "name": "Build Weekly",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "function plural(n, one, few, many){\n  const m10 = n%10, m100 = n%100;\n  if (m10===1 && m100!==11) return one;\n  if (m10>=2 && m10<=4 && (m100<10 || m100>=20)) return few;\n  return many;\n}\n\nconst out = $input.all();\nlet rows = out[0]?.json;\nif (!Array.isArray(rows)) rows = out.map(i => i.json);\nrows = (rows || []).filter(Boolean);\n\nconst NL = String.fromCharCode(10);\nconst today = new Date().toLocaleDateString('ru-RU',{\n  day:'numeric', month:'long', timeZone:'Europe/Moscow'\n});\n\nif (!rows.length) {\n  const text = '📅 Итоги недели ('+today+')'+NL+NL+\n    'На этой неделе ты не отметил ни одной статьи 👍.'+NL+\n    'Лайкай интересное — и в следующее воскресенье покажу, что тебя зацепило.';\n  return [{ json: { weeklyText: text } }];\n}\n\nconst byLink = {};\nconst kwCount = {};\nconst srcCount = {};\nfor (const r of rows) {\n  const a = Array.isArray(r.articles) ? r.articles[0] : r.articles;\n  if (!a) continue;\n  const key = a.link || a.title;\n  if (!byLink[key]) byLink[key] = { title:a.title, link:a.link, source:a.source, count:0 };\n  byLink[key].count++;\n  if (a.source) srcCount[a.source] = (srcCount[a.source]||0)+1;\n  for (const kw of (a.keywords||[])) kwCount[kw] = (kwCount[kw]||0)+1;\n}\n\nconst ranked = Object.values(byLink).sort((x,y) => y.count - x.count);\nconst totalLikes = rows.length;\nconst topArticles = ranked.slice(0,5);\n\nconst themeOfWeek = Object.entries(kwCount).sort((a,b) => b[1]-a[1])[0];\nconst topSource   = Object.entries(srcCount).sort((a,b) => b[1]-a[1])[0];\n\nconst medals = ['🥇','🥈','🥉'];\nconst lines = topArticles.map((a,i) => {\n  const medal = medals[i] || (i+1)+'.';\n  const c = a.count > 1 ? ' ('+a.count+' 👍)' : '';\n  return medal+' '+a.title+c+NL+'   → '+a.link;\n});\n\nconst text = [\n  '📅 Итоги недели ('+today+')',\n  '',\n  'За неделю ты отметил 👍 '+totalLikes+' '+plural(totalLikes,'статью','статьи','статей')+'.',\n  themeOfWeek ? '🔑 Тема недели: #'+themeOfWeek[0]+' ('+themeOfWeek[1]+'×)' : '',\n  topSource   ? '🌐 Любимый источник: '+topSource[0] : '',\n  '',\n  '⭐ Что зацепило больше всего:',\n  lines.join(NL+NL)\n].filter(Boolean).join(NL);\n\nreturn [{ json: { weeklyText: text } }];"
+      }
+    },
+    {
+      "id": "cc000001-0000-4000-8000-000000000004",
+      "name": "Send Weekly",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "=`https://api.telegram.org/bot${$env.TELEGRAM_TOKEN}/sendMessage`",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "=JSON.stringify({chat_id:$env.TELEGRAM_CHAT_ID,text:$json.weeklyText,disable_web_page_preview:true})",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Schedule: Sun 09:00 MSK": {
+      "main": [
+        [
+          {
+            "node": "Load Week Likes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Week Likes": {
+      "main": [
+        [
+          {
+            "node": "Build Weekly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Weekly": {
+      "main": [
+        [
+          {
+            "node": "Send Weekly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "meta": {
+    "instanceId": "local"
+  }
+}
