@@ -1,0 +1,32 @@
+name: Morning Digest
+
+on:
+  schedule:
+      - cron: '0 5 * * *'   # 08:00 MSK = 05:00 UTC
+        workflow_dispatch:        # manual trigger for testing
+
+        jobs:
+          run-digest:
+              runs-on: ubuntu-latest
+
+                  steps:
+                        - name: Checkout repository
+                                uses: actions/checkout@v4
+
+                                      - name: Set up Node.js 20
+                                              uses: actions/setup-node@v4
+                                                      with:
+                                                                node-version: '20'
+                                                                          cache: 'npm'
+
+                                                                                - name: Install dependencies
+                                                                                        run: npm ci
+
+                                                                                              - name: Run morning digest
+                                                                                                      run: node digest/run.js
+                                                                                                              env:
+                                                                                                                        TELEGRAM_TOKEN:     ${{ secrets.TELEGRAM_TOKEN }}
+                                                                                                                                  TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+                                                                                                                                            OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+                                                                                                                                                      SUPABASE_URL:       ${{ secrets.SUPABASE_URL }}
+                                                                                                                                                                SUPABASE_ANON_KEY:  ${{ secrets.SUPABASE_ANON_KEY }}
