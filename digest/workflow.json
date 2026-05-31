@@ -21,7 +21,7 @@
           "interval": [
             {
               "field": "cronExpression",
-              "expression": "0 8 * * *"
+              "expression": "0 17 * * *"
             }
           ]
         }
