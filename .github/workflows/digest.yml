@@ -2,31 +2,36 @@ name: Morning Digest
 
 on:
   schedule:
-      - cron: '0 5 * * *'   # 08:00 MSK = 05:00 UTC
-        workflow_dispatch:        # manual trigger for testing
+    - cron: '0 5 * * *'
+  workflow_dispatch:
 
-        jobs:
-          run-digest:
-              runs-on: ubuntu-latest
+jobs:
+  run-digest:
+    runs-on: ubuntu-latest
 
-                  steps:
-                        - name: Checkout repository
-                                uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-                                      - name: Set up Node.js 20
-                                              uses: actions/setup-node@v4
-                                                      with:
-                                                                node-version: '20'
-                                                                          cache: 'npm'
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-                                                                                - name: Install dependencies
-                                                                                        run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-                                                                                              - name: Run morning digest
-                                                                                                      run: node digest/run.js
-                                                                                                              env:
-                                                                                                                        TELEGRAM_TOKEN:     ${{ secrets.TELEGRAM_TOKEN }}
-                                                                                                                                  TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
-                                                                                                                                            OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-                                                                                                                                                      SUPABASE_URL:       ${{ secrets.SUPABASE_URL }}
-                                                                                                                                                                SUPABASE_ANON_KEY:  ${{ secrets.SUPABASE_ANON_KEY }}
+      - name: Run morning digest
+        run: node digest/run.js
+        env:
+          TELEGRAM_TOKEN:        ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID:      ${{ secrets.TELEGRAM_CHAT_ID }}
+          OPENROUTER_API_KEY:    ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL:      ${{ secrets.OPENROUTER_MODEL }}
+          SUPABASE_URL:          ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY:     ${{ secrets.SUPABASE_ANON_KEY }}
+          EMBEDDINGS_API_KEY:    ${{ secrets.EMBEDDINGS_API_KEY }}
+          EMBEDDINGS_URL:        ${{ secrets.EMBEDDINGS_URL }}
+          EMBEDDINGS_MODEL:      ${{ secrets.EMBEDDINGS_MODEL }}
+          DIGEST_RETENTION_DAYS: ${{ secrets.DIGEST_RETENTION_DAYS }}
